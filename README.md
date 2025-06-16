@@ -66,8 +66,6 @@ smart-home-project/
 │   └── js, css, img
 ├── templates/
 │   └── login.html, dashboard.html
-├── face_recognition/
-├── gesture_control/
 ├── esp_api/
 ├── requirements.txt
 └── README.md
