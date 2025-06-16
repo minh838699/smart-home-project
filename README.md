@@ -25,12 +25,12 @@ Dashboard Web UI được xây dựng bằng:
 
 | Thiết bị                      | Chức năng                                     |
 |-------------------------      |-----------------------------------------------|
-| NodeMCU-32S (ESP32)           | Điều khiển trung tâm, giao tiếp cảm biến      |
+| NodeMCU-32S (ESP32)           | Điều khiển, giao tiếp cảm biến                |
 | Cảm biến HC-SR04              | Phát hiện người đến gần                       |
 | Cảm biến MQ2                  | Phát hiện khói / khí gas                      |
 | Nhiệt ẩm kế Xiaomi BLE        | Theo dõi nhiệt độ – độ ẩm môi trường          |
-| Camera USB                    | Nhận diện khuôn mặt / cử chỉ bằng OpenCV      |
-| Đèn Yeelight + Camera Ezviz   | Thiết bị thông minh điều khiển trong nhà      |
+| Camera                        | Nhận diện khuôn mặt / cử chỉ bằng OpenCV      |
+| Đèn Yeelight + Đèn Ezviz      | Thiết bị thông minh điều khiển trong nhà      |
 | LM2596 Power Module           | Hạ áp, cấp nguồn ổn định cho mạch             |
 
 ## 🧠 AI & Xử lý hình ảnh
@@ -82,7 +82,7 @@ smart-home-project/
 ## 👨‍💻 Tác giả
 
 - **Minh Hoàng, Phan Quốc** – Bách Khoa Đà Nẵng  
-- Email: minhhoang@example.com  
+- Email: minhka1216@gmail.com  
 - GitHub: [@minh838699](https://github.com/minh838699)
 
 ---
