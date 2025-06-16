@@ -23,15 +23,16 @@ Dashboard Web UI được xây dựng bằng:
 
 ## 🔌 Phần cứng sử dụng
 
-| Thiết bị                      | Chức năng                                     |
-|-------------------------      |-----------------------------------------------|
-| NodeMCU-32S (ESP32)           | Điều khiển, giao tiếp cảm biến                |
-| Cảm biến HC-SR04              | Phát hiện người đến gần                       |
-| Cảm biến MQ2                  | Phát hiện khói / khí gas                      |
-| Nhiệt ẩm kế Xiaomi BLE        | Theo dõi nhiệt độ – độ ẩm môi trường          |
-| Camera                        | Nhận diện khuôn mặt / cử chỉ bằng OpenCV      |
-| Đèn Yeelight + Đèn Ezviz      | Thiết bị thông minh điều khiển trong nhà      |
-| LM2596 Power Module           | Hạ áp, cấp nguồn ổn định cho mạch             |
+| Thiết bị                    | Chức năng                                     |
+|-------------------------    |-----------------------------------------------|
+| Máy tính / Laptop           | Chạy backend Flask và Home Assistant          |
+| NodeMCU-32S (ESP32)         | Điều khiển, giao tiếp cảm biến      |
+| Cảm biến HC-SR04            | Phát hiện người đến gần                       |
+| Cảm biến MQ2                | Phát hiện khói / khí gas                      |
+| Nhiệt ẩm kế Xiaomi BLE      | Theo dõi nhiệt độ – độ ẩm môi trường          |
+| Camera USB                  | Nhận diện khuôn mặt / cử chỉ bằng OpenCV      |
+| Đèn Yeelight + Camera Ezviz | Thiết bị thông minh điều khiển trong nhà      |
+| LM2596 Power Module         | Hạ áp, cấp nguồn ổn định cho mạch             |
 
 ## 🧠 AI & Xử lý hình ảnh
 
