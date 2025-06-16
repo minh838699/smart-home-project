@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.socket.io/4.x/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    <button id="darkModeToggle" class="theme-toggle">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+    </button>
+
+    <div id="gas-popup" style="
+        display: none;
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ff4d4d;
+        color: white;
+        padding: 20px 40px;
+        border-radius: 10px;
+        font-weight: bold;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        z-index: 1000;
+        font-size: 1.4rem;
+        text-align: center;">
+        ⚠️ Phát hiện khí GAS! Kiểm tra ngay!
+    </div>
+
+
+
+    <div id="face-popup" style="
+        display: none;  
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ff8800;
+        color: white;
+        padding: 20px 40px;
+        border-radius: 10px;
+        font-weight: bold;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        z-index: 1000;
+        font-size: 1.4rem;
+        text-align: center;">
+        ⚠️ Phát hiện người lạ trước cửa!
+    </div>
+
+      
+    <div class="sidebar" id="sidebar">
+        <h2>SmartHome</h2>
+        <ul class="nav">
+            <li><a href="#" class="active" onclick="switchTab('overview', this)"><i class="fas fa-home"></i> <span>Tổng quan</span></a></li>
+            <li><a href="#" onclick="switchTab('energy', this)"><i class="fas fa-bolt"></i> <span>Năng lượng</span></a></li>
+            <li><a href="#" onclick="switchTab('history', this)"><i class="fas fa-clock-rotate-left"></i> <span>Lịch sử</span></a></li>
+            <li><a href="/" onclick="localStorage.removeItem('hassToken')">
+    <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+  </a></li>
+        </ul>
+        
+    </div>
+
+    <div class="tab-content active" id="overviewTab">
+        <div class="container" id="mainContainer">
+            <div class="page-header">
+                <h1 id="pageTitle" class="page-title">Tổng quan</h1>
+            </div>
+              
+            <div class="dashboard">
+                <!-- Yeelight Control Card -->
+                <div class="card">
+                    <h2>Điều Khiển Đèn</h2>
+                    <div class="light-controls">
+                        <div class="light-item">
+                            <span class="light-name" data-entity="light.192_168_1_18">Đèn Phòng Khách</span>
+                            <label class="switch">
+                                <input type="checkbox" id="livingRoomLight">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="brightness-control">
+                            <p>Độ sáng: <span id="brightnessValue">70</span>%</p>
+                            <input type="range" min="1" max="100" value="70" class="brightness-slider" id="livingRoomBrightness">
+                        </div>
+
+                        <div class="light-item">
+                            <span class="light-name" data-entity="input_boolean.den_2">Đèn Phòng Ngủ</span>
+                            <label class="switch">
+                                <input type="checkbox" id="bedroomLight">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="brightness-control">
+                            <p>Độ sáng: <span id="bedroomBrightnessValue">50</span>%</p>
+                            <input type="range" min="1" max="100" value="50" class="brightness-slider" id="bedroomBrightness">
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <!-- Temperature Card -->
+                <div class="card">
+                    <h2>Nhiệt Độ</h2>
+                    <div class="sensor-data">
+                        <div class="sensor-value" id="temperatureValue">--°C</div>
+                        
+                    </div>
+                    <canvas id="temperatureChart" height="200"></canvas>
+                </div>
+
+                <!-- Humidity Card -->
+                <div class="card">
+                    <h2>Độ Ẩm</h2>
+                    <div class="sensor-data">
+                        <div class="sensor-value" id="humidityValue">--%</div>
+                    </div>
+                    <canvas id="humidityChart" height="200"></canvas>
+                </div>
+                <div class="camera-preview" style="text-align: center; margin: 20px 0;">
+                    <h3>Camera an ninh 3</h3>
+                    <img src="/video_feed" id="remoteCamera" width="100%" style="border-radius: 10px;">
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Các tab khác -->
+    <div id="energyTab" class="tab-content">
+        <div class="container"> 
+            <div class="page-header">
+                <h1 id="pageTitle" class="page-title">Năng lượng</h1>
+            </div>
+            <div class="energy-grid">
+                <div class="card">
+                    <h3>🔌 Chỉ số điện</h3>
+                    <div class="energy-info">
+                    <div><i class="fas fa-tachometer-alt"></i> Chỉ số đầu kỳ: <span id="startIndex">--</span></div>
+                    <div><i class="fas fa-tachometer-alt"></i> Chỉ số tạm chốt: <span id="currentIndex">--</span></div>
+                    <div><i class="fas fa-calendar-alt"></i> Ngày đầu kỳ: <span id="startDay">--</span></div>
+                    <div><i class="fas fa-calendar-check"></i> Ngày tạm chốt: <span id="endDay">--</span></div>
+                </div>
+                </div>
+            
+                <div class="card">
+                    <h3>🌟 Sản lượng tiêu thụ</h3>
+                    <div class="energy-info">
+                        <div><i class="fas fa-bolt"></i> Sản lượng hôm qua: <span id="dailyUsage1">--</span></div>
+                        <div><i class="fas fa-bolt"></i> Sản lượng hôm nay: <span id="dailyUsage2">--</span></div>
+                        <div><i class="fas fa-bolt"></i> Sản lượng tháng này: <span id="monthlyUsage">--</span></div>
+                    </div>
+                </div>
+            
+                <div class="card">
+                    <h3>💰 Hóa đơn điện</h3>
+                    <div class="energy-info">
+                        <div><i class="fas fa-money-bill-wave"></i> Tiền điện hôm qua: <span id="dailyCost1">--</span></div>
+                        <div><i class="fas fa-money-bill-wave"></i> Tiền điện hôm nay: <span id="dailyCost2">--</span></div>
+                        <div><i class="fas fa-wallet"></i> Tiền điện tháng này: <span id="monthlyCost">--</span></div>
+                        <div><i class="fas fa-hand-holding-usd"></i> Tiền nợ: <span id="debt">--</span></div>
+                        <div><i class="fas fa-file-invoice"></i> Hóa đơn cũ: <span id="oldBill">--</span></div>
+                    <div><i class="fas fa-exclamation-triangle"></i> Lịch cắt điện: <span id="cutSchedule">--</span></div>
+                    <div><i class="fas fa-clock"></i> Lần cập nhật cuối: <span id="lastUpdate">--</span></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+      
+    <div class="tab-content" id="historyTab">
+        <div class="container">
+            <h1>Lịch sử</h1>
+            <p>Lịch sử hoạt động sẽ được hiển thị ở đây.</p>
+               <!-- <div class="card">
+                    <h2>Ảnh Người Lạ Gần Nhất</h2>
+                    <img id="strangerImage" src="" alt="Chưa có ảnh" style="max-width: 100%; border: 2px solid red; border-radius: 10px;"> */
+                </div>-->
+                <div style="margin-bottom: 20px;">
+                    <label for="historyType">Chọn loại lịch sử:</label>
+                    <select id="historyType" onchange="switchHistoryView(this.value)" style="padding: 6px; border-radius: 6px;">
+                            <option value="stranger">Phát hiện người lạ</option>
+                            <option value="gas">Phát hiện khí GAS</option>
+                            <option value="electricPrice">Biểu đồ giá điện (VNĐ)</option>
+                            <option value="electricUsage">Biểu đồ điện năng tiêu thụ (kWh)</option>
+                    </select>
+                </div>
+                <!-- Lịch sử người lạ -->
+<div id="historyStranger" class="history-section">
+    <div class="card">
+        <h2>Phát hiện người lạ</h2>
+        <ul id="strangerLog" style="padding-left: 20px;"></ul>
+    </div>
+</div>
+
+<!-- Lịch sử khí GAS -->
+<div id="historyGas" class="history-section" style="display:none;">
+    <div class="card">
+        <h2>Phát hiện khí GAS</h2>
+        <ul id="gasLog" style="padding-left: 20px;"></ul>
+    </div>
+</div>
+
+<!-- Biểu đồ giá điện -->
+<div id="historyElectricPrice" class="history-section" style="display:none;">
+    <div class="card">
+        <h2>Giá điện theo ngày</h2>
+        <canvas id="priceChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Biểu đồ tiêu thụ điện -->
+<div id="historyElectricUsage" class="history-section" style="display:none;">
+    <div class="card">
+        <h2>Tiêu thụ điện theo ngày</h2>
+        <canvas id="usageChart" height="200"></canvas>
+    </div>
+</div>
+               
+        </div>
+    </div>
+
+    <div class="status-bar">
+         <div class="status-indicator">
+            <div class="indicator disconnected" id="connectionStatus"></div>
+                <span id="connectionText">Đang kết nối với Máy chủ...</span>
+            </div>
+            <div>
+                <span id="lastUpdated">Chưa có dữ liệu</span>
+            </div>
+        </div>
+        
+    </div>
+    <div id="scheduleModal" class="modal" style="display:none;">
+        <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h3 id="modalTitle">Cài đặt đèn</h3>
+        <div style="margin-bottom: 10px;">
+            <button onclick="switchTabContent('scheduleTab')">Lên lịch</button>
+            <button onclick="switchTabContent('timerTab')">Hẹn giờ</button>
+            <button onclick="switchTabContent('deleteTab')">Xoá lịch</button>
+
+        </div>
+    
+        <!-- Tab 1: Lên lịch -->
+        <div id="scheduleTab">
+            <form id="scheduleForm">
+            <input type="hidden" name="entity_id" id="scheduleEntity">
+            <input type="text" name="alias" placeholder="Tên lịch trình" required />
+            <input type="time" name="time" required />
+            <select name="action">
+                <option value="turn_on">Bật</option>
+                <option value="turn_off">Tắt</option>
+            </select>
+            <button type="submit">Tạo lịch</button>
+            </form>
+        </div>
+    
+        <!-- Tab 2: Hẹn giờ -->
+        <div id="timerTab" style="display:none;">
+            <form id="timerForm">
+              <input type="hidden" name="entity_id" id="timerEntity">
+              <label>Hẹn tắt sau (phút):</label>
+              <input type="number" name="minutes" min="1" required>
+              <button type="submit">Hẹn giờ</button>
+            </form>
+            <div id="countdownDisplay" style="margin-top: 15px; font-weight: bold;"></div>
+            <button id="cancelTimerButton" style="margin-top: 10px; display: none;">Dừng hẹn giờ</button>
+        </div>
+          
+        <!-- Tab 3: Xoá lịch -->
+        <div id="deleteTab" style="display:none;">
+            <form id="deleteForm">
+            <input type="text" name="automation_alias" placeholder="Tên lịch trình cần xoá" required />
+            <button type="submit" style="margin-top: 10px;">Xoá lịch trình</button>
+            </form>
+        </div>
+  
+        </div>
+    </div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
