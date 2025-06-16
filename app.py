@@ -146,9 +146,7 @@ def get_sensor_data():
 
 # ==== LẤY DỮ LIỆU TỰ ĐỘNG TỪ HOME ASSISTANT ====
 
-HASS_URL = "https://akglxxupsbmqkezruoy7zca8tb6ekqyb.ui.nabu.casa"
-HASS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxNDI1MThhMTQxYjM0N2UzYTU2YWQ4YTYxYTBkN2I1MiIsImlhdCI6MTc0NTM5MzIwOCwiZXhwIjoyMDYwNzUzMjA4fQ.y4sw2nzjpsgdldiWpE-gMBl2Oxv_N8sjHoqNJ6A7-Zo"  # 🔁 Thay bằng token thật
-
+HASS_URL = "https://1bfcl39velcvq1mpfkxqv98bftpflsmc.ui.nabu.casa"
 HEADERS = {
     "Authorization": f"Bearer {HASS_TOKEN}",
     "Content-Type": "application/json"
